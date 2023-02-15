@@ -1,14 +1,15 @@
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import json
 
+import graph_speed_accel_indiv as by_car
 import graph_analysis_by_timestamp as by_timestamp
-FILE='groundtruth_scene_1_130__cajoles_transformed_by_car.json'
 
-with open(FILE) as file:
-    by_car_by_timestamp = json.load(file)
+fontsize = 5
 
 figure = plt.figure()
+
+plt.rcParams.update({'font.size': 8})
+plt.subplots_adjust(left = 0.125, right = 0.9, bottom = 0.1, top = 0.9, wspace=0.2, hspace=0.5)
 
 gs = mpl.gridspec.GridSpec(nrows=5, ncols=4, height_ratios=[1,1,3,3,3])
 
@@ -29,14 +30,13 @@ timestamp_title.tick_params(left = False, right = False , labelleft = False ,
 
 # indiv
 i1 = figure.add_subplot(gs[2,0])
-i1.tick_params(left = False, right = False , labelleft = False ,
-                labelbottom = False, bottom = False)
 i2 = figure.add_subplot(gs[2,1])
-i2.tick_params(left = False, right = False , labelleft = False ,
-                labelbottom = False, bottom = False)
+by_car.graph_speed_accel(i1, i2)
+
+
 i3 = figure.add_subplot(gs[3,0])
-i3.tick_params(left = False, right = False , labelleft = False ,
-                labelbottom = False, bottom = False)
+by_car.print_lane_changes(i3)
+
 i4 = figure.add_subplot(gs[3,1])
 i4.tick_params(left = False, right = False , labelleft = False ,
                 labelbottom = False, bottom = False)
@@ -51,9 +51,12 @@ i6.tick_params(left = False, right = False , labelleft = False ,
 
 t1 = figure.add_subplot(gs[2,2])
 by_timestamp.graph_follow_distance_distribution(t1)
+n = 5  # Keeps every 7th label
+[l.set_visible(False) for (i,l) in enumerate(t1.xaxis.get_ticklabels()) if i % n != 0]
 
 t2 = figure.add_subplot(gs[2,3])
 by_timestamp.graph_follow_distance_change_distribution(t2)
+[l.set_visible(False) for (i,l) in enumerate(t2.xaxis.get_ticklabels()) if i % n != 0]
 
 t3 = figure.add_subplot(gs[3,2])
 t3.tick_params(left = False, right = False , labelleft = False ,

@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import statistics as st
 import json
 FILE = 'groundtruth_scene_1_130__cajoles_transformed_by_car.json'
 
@@ -22,7 +21,6 @@ def graph_follow_distance_distribution(ax):
 
     for i in range(min(dic.keys()), max(dic.keys())+1, 50):
         dic[i] = dic.get(i,0)
-    plt.rcParams.update({'font.size': 6})
     sort_dict = dict(sorted(dic.items()))
     names = list(sort_dict.keys())
     values = list(sort_dict.values())
@@ -60,7 +58,6 @@ def graph_follow_distance_change_distribution(ax):
     for i in range(min(dic.keys()), max(dic.keys())+1, 2):
         dic[i] = dic.get(i,0)
 
-    plt.rcParams.update({'font.size': 6})
     sort_dict = dict(sorted(dic.items()))
     names = list(sort_dict.keys())
     values = list(sort_dict.values())
