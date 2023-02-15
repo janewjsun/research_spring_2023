@@ -1,6 +1,6 @@
 import json
 
-FILE = "groundtruth_scene_1_130__cajoles_processed.json"
+FILE = "../1_130/groundtruth_scene_1_130__cajoles_processed.json"
 
 
 with open(FILE) as file:

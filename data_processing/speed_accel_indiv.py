@@ -1,6 +1,5 @@
 import math
-import matplotlib.pyplot as plt
-import statistics as st
+import json
 
 FEET_PER_MILE = 5280
 SECONDS_PER_HR = 3600
@@ -47,49 +46,6 @@ def compute_speed_accel(data):
 
             accel.append((x_accel_cur, y_accel_cur, cur_accel))
         data_set['speed'], data_set['accel'] = speed, accel
-
-
-# prints acceleration and speed data of car trajectories
-def print_speed_accel(data):
-    speed = []
-    accel = []
-    ttl = 0
-    for set in data:
-        ttl+=1
-
-        # just concatenate the lists
-        for i in range(1, len(set['speed'])):
-            speed.append(set['speed'][i][2])
-            if i == 1: continue
-            accel.append(set['accel'][i][2])
-
-    print(f"across {ttl} trajectories, there was:\n- an average speed of {st.mean(speed):.2f}"
-          f" miles per hour\n - maximum: {max(speed):.2f}\n - minimum: {min(speed):.2f}\n - "
-          f"standard deviation: {st.stdev(speed):.2f}")
-    print(f"- an average acceleration of {st.mean(accel):.2f} feet per second squared\n"
-          f" - maximum: {max(accel):.2f}\n - minimum: {min(accel):.2f}\n - standard deviation: "
-          f"{st.stdev(accel):.2f}")
-
-    print("graphed information of distributions of speed and acceleration: ")
-    graph_speed_accel(speed, accel)
-
-    print()
-
-
-# graphs speed and acceleration information of car trajectories
-def graph_speed_accel(speed, accel):
-    figure, axis = plt.subplots(nrows=1, ncols=2)
-    axis[0].hist(speed)
-    axis[0].set_ylabel("# of trajectories")
-    axis[0].set_xlabel("speed (mph)")
-    axis[0].set_title("distribution of speeds")
-
-    axis[1].hist(accel)
-    axis[1].set_ylabel("# of trajectories")
-    axis[1].set_xlabel("acceleration (f/s^2)")
-    axis[1].set_title("distribution of accelerations")
-
-    plt.show()
 
 
 # this function takes in a variable and returns dictionary keys of # and % accel and brake events
@@ -191,54 +147,6 @@ def compute_accel_percentage(data, variable):
         data_set[percent_brake_name] = time_brake / total_time
 
 
-# prints statistics regarding acceleration events
-def print_accel_event_stats(data, variable):
-    idx, num_accel_name, num_brake_name, percent_accel_name, percent_brake_name \
-        = convert_variable_to_names(variable)
-    var_to_print = variable if variable!='ttl' else 'overall'
-    num_accel_events = 0
-    num_brake_events = 0
-    percent_in_accel = [0,0]
-    percent_in_brake = [0,0]
-    sum_accel = 0
-    sum_brake = 0
-    for data_set in data:
-        num_accel_events += len(data_set[num_accel_name])
-        num_brake_events += len(data_set[num_brake_name])
-
-        for i in data_set[num_accel_name]:
-            sum_accel += i[0]
-
-        for i in data_set[num_brake_name]:
-            sum_brake += i[0]
-
-        if data_set[num_accel_name] != 0:
-            percent_in_accel[0] += data_set[percent_accel_name]
-            percent_in_accel[1] += 1
-        if data_set[num_brake_name] != 0:
-            percent_in_brake[0] += data_set[percent_brake_name]
-            percent_in_brake[1] += 1
-
-    print(f"total {var_to_print} events:",
-          num_brake_events+num_accel_events)
-    print(f"total {var_to_print} acceleration events:",
-          num_accel_events)
-    print(f"total {var_to_print} brake events:",
-          num_brake_events)
-
-    print(f"average acceleration of {var_to_print} acceleration events: "
-          f"{sum_accel/num_accel_events if num_accel_events>0 else 0:.2f} ft/s/s")
-    print(f"average braking of {var_to_print} brake events: "
-          f"{sum_brake/num_brake_events if num_brake_events>0 else 0:.2f} ft/s/s")
-
-    print(f"average percent of time spent in {var_to_print} acceleration events of cars that had "
-          f"acceleration events: {100*percent_in_accel[0]/percent_in_accel[1]:.2f}%")
-    print(f"average percent of time spent in {var_to_print} brake events of cars that had brake "
-          f"events: {100*percent_in_brake[0]/percent_in_brake[1]:.2f}%")
-
-    print()
-
-
 # finds lane changes and puts it in 'lane_changes' key in form [lane_name, start time in lane, end time in lane]
 def find_lane_changes(data):
     lanes = {'E1': [0, 12], 'E2': [12, 24], 'E3': [24, 36], 'E4': [36, 48], 'E5': [48, 60],
@@ -272,37 +180,9 @@ def find_lane_changes(data):
             data_set['lane_changes'].append([cur, start_time, data_set['timestamp'][-1]])
 
 
-# prints data regarding lane change information for car trajectories
-def print_lane_changes(data):
-    ttl, ttl_lc, num_changes = 0,0,0
-    lanes = {'E1': 0, 'E2': 0, 'E3': 0, 'E4': 0, 'E5': 0, 'E6': 0, 'W1': 0, 'W2': 0,
-                      'W3': 0, 'W4': 0, 'W5': 0, 'W6': 0}
-    for set in data:
-        ttl += 1
-        if len(set['lane_changes']) > 1:
-            ttl_lc += 1
-            num_changes += len(set['lane_changes']) - 1
-        for chng in set['lane_changes']:
-            lanes[chng[0]] += 1
-
-    print(f'there were {ttl_lc} trajectories with lane changes, with an average of '
-          f'{num_changes/ttl_lc:.2f} lane changes. ')
-    print(f'across all {ttl} trajectories, the average number of lanes each car occupied was '
-          f'{(num_changes+ttl)/ttl:.2f}. ')
-    print()
-
-    names = list(lanes.keys())
-    values = list(lanes.values())
-
-    plt.bar(range(len(lanes)), values, tick_label=names)
-    plt.ylabel("# of trajectories")
-    plt.xlabel("lane of highway")
-    plt.title("distribution of lane locations")
-    plt.show()
-
 
 # calculates the conditional probability of P(B|A) and P(A|B) regarding lane change and x acceleration
-def compute_and_print_conditional_prob(data):
+def compute_conditional_prob(data):
     # N(A + B) / N(A) = P(B | A): num acceleration and lane change / num lane change = prob accel given lane chng
     # A = lane change
     # B = acceleration of x
@@ -352,19 +232,13 @@ def compute_and_print_conditional_prob(data):
             summed_occurrences_A_given_B+=1
             summed_occurrences_B_given_A+=1
 
-    print(f'P(B|A) — the probability of acceleration given a lane change: '
-          f'{summed_conditional_B_given_A/summed_occurrences_B_given_A*100:.2f}%') #should be 0.33
-    print(f'P(A|B) — the probability of a lane change given acceleration: '
-          f'{summed_conditional_A_given_B/summed_occurrences_A_given_B*100:.2f}%')
-    print()
 
+def create_newfile_dictionary(new_file, data):
+    new_file.write(json.dumps(data, indent=4))
 
 # runs the functions in speed_accel_indiv based on pre-specified boundaries on what constitutes
 # brake and acceleration events
 def main(data, BRAKE_BOUNDARY, ACCEL_BOUNDARY):
-    config = {
-        'print': 1
-    }
 
     compute_speed_accel(data)
 
@@ -374,13 +248,5 @@ def main(data, BRAKE_BOUNDARY, ACCEL_BOUNDARY):
         compute_accel_percentage(data, var)
 
     find_lane_changes(data)
-    compute_and_print_conditional_prob(data)
-
-
-    if config['print']:
-        print_speed_accel(data)
-        print_lane_changes(data)
-
-        for var in vars:
-            print_accel_event_stats(data, var)
-
+    with open('../1_130/groundtruth_scene_1_130__cajoles_processed.json', 'w') as new_file:
+        create_newfile_dictionary(new_file, data)

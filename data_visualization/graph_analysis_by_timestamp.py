@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import json
-FILE = 'groundtruth_scene_1_130__cajoles_transformed_by_car.json'
+FILE = '../1_130/groundtruth_scene_1_130__cajoles_transformed_by_car.json'
 
 with open(FILE) as file:
     by_car_by_timestamp = json.load(file)

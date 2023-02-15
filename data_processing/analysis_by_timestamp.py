@@ -123,6 +123,6 @@ def main(data):
     combine_car_leaders(by_car_by_timestamp)
     calculate_follow_distance(data, by_car_by_timestamp)
 
-    with open('groundtruth_scene_1_130__cajoles_transformed_by_car.json', 'w') as new_file:
+    with open('../1_130/groundtruth_scene_1_130__cajoles_transformed_by_car.json', 'w') as new_file:
         create_newfile_dictionary(new_file, by_car_by_timestamp)
 

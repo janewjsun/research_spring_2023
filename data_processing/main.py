@@ -1,7 +1,7 @@
 import json
 
-FILE_BY_CAR = "groundtruth_scene_1_130__cajoles.json"
-FILE_BY_TIMESTAMP = "groundtruth_scene_1_130__cajoles_transformed.json"
+FILE_BY_CAR = "../1_130/groundtruth_scene_1_130__cajoles.json"
+FILE_BY_TIMESTAMP = "../1_130/groundtruth_scene_1_130__cajoles_transformed.json"
 
 import speed_accel_indiv
 import analysis_by_timestamp
